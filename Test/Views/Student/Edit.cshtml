@@ -1,0 +1,135 @@
+﻿@model Test.Models.Student
+
+@{
+    ViewBag.Title = "Edit";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Edit</h2>
+<h4>Student</h4>
+<hr />
+
+<form>
+    <input type="number" id="inputid" value="@ViewBag.Id" hidden />
+    <div class="mb-3">
+        <label for="name" class="form-label">Name</label>
+        <input type="text" class="form-control" id="name">
+        <span id="namecheck" style="color:red">
+            **Name is missing
+        </span>
+    </div>
+    <div class="mb-3">
+        <label for="age" class="form-label">Age</label>
+        <input type="number" class="form-control" id="age">
+        <span id="agecheck" style="color:red">
+            **Age is missing
+        </span>
+    </div>
+    <button type="button" class="btn btn-primary" id="submitbtn">Submit</button>
+</form>
+
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"
+        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+
+<script type="text/javascript">
+    //Get Details
+    $(document).ready(function () {
+        let Id = $('#inputid').val();
+
+        $.ajax({
+            type: "GET",
+            url: "/Student/GetStudent",
+            data: {
+                id: Id
+            },
+            success: function (data) {
+                let std = JSON.parse(data);
+                $('#name').val(std.Name);
+                $("#age").val(std.Age);
+            },
+            error: function () {
+                alert("Failed");
+            }
+        })
+    })
+
+    $('#namecheck').hide();
+    let nameError = true;
+
+    $('#name').keyup(function () {
+        validateName();
+    });
+
+    function validateName() {
+        let nameValue = $('#name').val();
+        if (nameValue.length == '') {
+            $('#namecheck').show();
+            nameError = false;
+        }
+        else if ((nameValue.length < 3) || (nameValue.length > 20)) {
+            $('#namecheck').show();
+            $('#namecheck').html
+                ("** length of name must be between 3 and 20")
+            nameError = false;
+
+        }
+        else {
+            $('#namecheck').hide();
+            nameError = true;
+        }
+    }
+
+    $('#agecheck').hide();
+    let ageError = true;
+
+    $('#age').keyup(function () {
+        validateAge();
+    });
+
+    function validateAge() {
+        let ageValue = $('#age').val();
+        if (ageValue.length == '') {
+            $('#agecheck').show();
+            ageError = false;
+        }
+        else if ((ageValue < 18) || (ageValue > 60)) {
+            $('#agecheck').show();
+            $('#agecheck').html
+                ("** age must be greater than 18 and less than 60")
+            ageError = false;
+        }
+        else {
+            $('#agecheck').hide();
+            ageError = true;
+        }
+    }
+
+    $('#submitbtn').click(function () {
+        validateName();
+        validateAge();
+        if ((nameError == true) && (ageError == true)) {
+            $.ajax({
+                type: "POST",
+                url: "/Student/Edit",
+                data: {
+                    Id: $('#inputid').val(),
+                    Name: $("#name").val(),
+                    Age: $("#age").val()
+                },
+                success: function () {
+                    $(location).prop('href', '/Student/Index')
+                },
+                error: function () {
+                    alert("Failed");
+                }
+            })
+        }
+    })
+
+</script>
+

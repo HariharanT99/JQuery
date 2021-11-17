@@ -1,0 +1,62 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Index</h2>
+
+<button class="btn btn-primary" id="sendbtn">Send</button>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+
+<script type="text/javascript">
+
+    $('#sendbtn').click(function () {
+
+        var results = new Array();
+
+        var emp1 = { "ID": "12", "Name": "Manas" };
+        results.push(emp1);
+
+        var emp2 = { "ID": "2", "Name": "Tester" };
+        results.push(emp2);
+
+        // Without array you can use like to construct JSON object
+        var results = { "ID": "1", "Name": "Manas" };
+
+        var postData = { empList: results };
+
+        $.ajax({
+            url: 'Employee/SaveEmp',
+            data: JSON.stringify(postData),
+            type: 'POST',
+            contentType: 'application/json',
+            dataType: 'json',
+            beforeSend: function () {
+                Show(); // Show loader icon
+            },
+            success: function (result) {
+                alert(result);
+            },
+            complete: function () {
+                Hide(); // Hide loader icon
+            },
+            failure: function (jqXHR, textStatus, errorThrown) {
+                alert("Status: " + jqXHR.status + "; Error: " + jqXHR.responseText); // Display error message
+            }
+        });
+    });
+
+    $(document).ready(function () {
+        $("#div_Loader").hide();
+    });
+
+    function Show() {
+        $('#div_Loader').show();
+    }
+
+    function Hide() {
+        $('#div_Loader').hide();
+    }
+
+</script> 
